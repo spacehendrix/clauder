@@ -28,12 +28,7 @@
 → \033[0;31m/clear\033[0m to delete all context
 → \033[0;31m/init\033[0m to initialize a 'CLAUDE.md' file with general instructions for Claude Code
 → \033[0;31m/mcp\033[0m to manage MCP servers
-→ \033[0;31m/status\033[0m for Claude's status
-
-
-\033[1;33m⚠️  IMPORTANT\033[0m
-
-→ Remember to run \033[1;33m/rules\033[0m as your first message in the chat below. 
+→ \033[0;31m/status\033[0m for Claude's status 
 
 
 
