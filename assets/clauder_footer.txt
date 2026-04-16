@@ -5,7 +5,7 @@
 ░░░░░░░░░░ INITIALIZING SESSION.. ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 
-🔥 Report issues: \033[0;90mhttps://github.com/blueraai/clauder/issues/\033[0m
+🔥 Report issues: \033[0;90mhttps://github.com/spacehendrix/clauder/issues/\033[0m
 
 * Add MCP servers: \033[0;90mstop clauder and run 'clauder_activate'\033[0m
 * Manage MCP servers: \033[0;90msee '.mcp.json' to manage MCP servers added by clauder\033[0m

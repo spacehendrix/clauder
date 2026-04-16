@@ -81,8 +81,8 @@
               A _ S A F E R  &  S U P E R C H A R G E D _ C L A U D E
 
 
-Repository: https://github.com/blueraai/clauder
-Learn More: https://bluera.ai 
+Repository: https://github.com/spacehendrix/clauder
+Learn More: https://spacehendrix.com 
 
 --
 

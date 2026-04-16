@@ -3,13 +3,13 @@
 ## `> CLAUDER` - a safer & supercharged toolkit for Claude Code
 
 <p align="left">
-    <a href="https://github.com/blueraai/universal-intelligence/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/blueraai/universal-intelligence.svg?color=00bf48"></a>
+    <a href="https://github.com/spacehendrix/clauder/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/spacehendrix/clauder.svg?color=00bf48"></a>
     <a href="https://discord.gg/7g9SrEc5yT"><img alt="Discord" src="https://img.shields.io/badge/Join-Discord-7289DA?logo=discord&logoColor=white&color=4911ff"></a>
 </p>
 
 
 > [!TIP]
-> Would you rather [**chat with our docs**](https://githubchat.bluera.ai/#url=https%3A%2F%2Fgithub.com%2Fblueraai%2Fclauder)? 💬
+> Would you rather [**chat with our docs**](https://githubchat.spacehendrix.com/#url=https%3A%2F%2Fgithub.com%2Fspacehendrix%2Fclauder)? 💬
 > 
 > *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
 
@@ -20,7 +20,7 @@ It **auto-updates** so you always get the latest tools, and never have to think 
 > [!WARNING]
 > While `clauder` helps setting guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and toolset, and *assumes co-supervision by a human in the loop*.
 
-**Bluera Inc.** https://bluera.ai
+**spacehendrix** https://spacehendrix.com
 
 ## Overview
 
@@ -116,7 +116,7 @@ Required if using MCP servers (refer to `.mcp.json` for details):
 
 ```bash
 # Clone and install repository
-cd ~/ && git clone https://github.com/blueraai/clauder.git && cd clauder && bash ./clauder_install.sh
+cd ~/ && git clone https://github.com/spacehendrix/clauder.git && cd clauder && bash ./clauder_install.sh
 ```
 
 Navigate to your project:
@@ -143,7 +143,7 @@ clauder # (choose ** activate in project ** when prompted)
 ## Documentation
 
 > [!TIP]
-> 💬 You may also [**chat with this page on GitHub Chat →**](https://githubchat.bluera.ai/#url=https%3A%2F%2Fgithub.com%2Fblueraai%2Fclauder)
+> 💬 You may also [**chat with this page on GitHub Chat →**](https://githubchat.spacehendrix.com/#url=https%3A%2F%2Fgithub.com%2Fspacehendrix%2Fclauder)
 > 
 > *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
 
@@ -155,7 +155,7 @@ clauder # (choose ** activate in project ** when prompted)
 > Ensure the requirements above are met
 ```bash
 # Clone repository
-cd ~/ && git clone https://github.com/blueraai/clauder.git
+cd ~/ && git clone https://github.com/spacehendrix/clauder.git
 
 # Install (must be run from the `clauder` dir)
 cd clauder && bash ./clauder_install.sh
@@ -1161,10 +1161,10 @@ If you'd like to support to `clauder` here are a few ways to do so:
 - 🔧 Help maintain, test, enhance `clauder`
 - ✉️ Email us security concerns
 - ❤️ Sponsor this project on Github
-- 🤝 [Partner with Bluera](mailto:contact@bluera.ai)
+- 🤝 [Partner with spacehendrix](mailto:thespacehendrix@gmail.com)
 
 ## License
 
-Apache 2.0 - Bluera Inc.
+Apache 2.0 - spacehendrix
 
-> https://bluera.ai
+> https://spacehendrix.com
