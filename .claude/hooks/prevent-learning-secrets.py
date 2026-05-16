@@ -405,7 +405,7 @@ class ProjectSafetyChecker:
         # Check if secret pattern safety checks are enabled
         preferences = get_preferences()
         secret_pattern_safety_checks = preferences.get('secret_pattern_safety_checks', {})
-        skip_secret_checks = not secret_pattern_safety_checks.get('enabled', True)
+        skip_secret_checks = not secret_pattern_safety_checks.get('enabled', False)
         
         # print_status(Colors.YELLOW, "Checking project safety for indexing...")
         # print(f"Project directory: {project_path.resolve()}")

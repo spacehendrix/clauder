@@ -27,5 +27,8 @@
   },
   "automated_git_commits": {
     "enabled": true
+  },
+  "prompt_secret_safety_checks": {
+    "enabled": false
   }
 }

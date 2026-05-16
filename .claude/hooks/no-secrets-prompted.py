@@ -156,11 +156,14 @@ except json.JSONDecodeError as e:
 
 prompt = input_data.get("prompt", "")
 
-# Check if secret pattern safety checks are enabled
+# Opt-in via .claude/preferences.json → prompt_secret_safety_checks.enabled
 preferences = get_preferences()
-secret_pattern_safety_checks = preferences.get('secret_pattern_safety_checks', {})
-if not secret_pattern_safety_checks.get('enabled', True):
-    print(f"Skipping secret pattern safety checks.")
+prompt_secret_safety_checks = preferences.get('prompt_secret_safety_checks', {})
+if not prompt_secret_safety_checks.get('enabled', False):
+    output = {
+        "reason": "Prompt secret safety checks disabled in preferences. Proceeding."
+    }
+    print(json.dumps(output))
     sys.exit(0)
 
 # Check for sensitive keywords FIXME: (Disabled for false positives)
