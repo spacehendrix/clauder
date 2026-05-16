@@ -3,3 +3,5 @@ DS_Store
 .env.*
 dist
 .tmp
+logs
+__pycache__
