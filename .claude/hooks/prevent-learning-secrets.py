@@ -11,9 +11,10 @@ import json
 import re
 import math
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from collections import Counter
 from utils.trace_decision import log_decision
+from utils.claude import find_claude_directory
 
 def get_preferences():
     """Read preferences from .claude/preferences.json."""
@@ -72,16 +73,20 @@ class ProjectSafetyChecker:
         
         # Load exclusion patterns (will be loaded when check_project_safety is called)
         self.exclusion_patterns = []
+        self.claude_root: Optional[Path] = None
     
     def _load_exclusion_patterns(self, project_path: Path) -> List[str]:
         """Load exclusion patterns from .claude/.exclude_security_checks file."""
-        exclusion_file = project_path / ".claude" / ".exclude_security_checks"
+        resolved_project_path = project_path.resolve()
+        self.claude_root = find_claude_directory(resolved_project_path) or resolved_project_path
+        exclusion_file = self.claude_root / ".claude" / ".exclude_security_checks"
         patterns = []
         
         if 'standalone' in sys.argv:  # Debug output only in standalone mode
             print_status(Colors.GRAY, f"DEBUG: Looking for exclusion file at: {exclusion_file}")
             print_status(Colors.GRAY, f"DEBUG: Current working directory: {Path.cwd()}")
-            print_status(Colors.GRAY, f"DEBUG: Project path: {project_path}")
+            print_status(Colors.GRAY, f"DEBUG: Project path: {resolved_project_path}")
+            print_status(Colors.GRAY, f"DEBUG: Claude root: {self.claude_root}")
         
         if exclusion_file.exists():
             try:
@@ -103,7 +108,11 @@ class ProjectSafetyChecker:
     
     def _is_excluded(self, file_path: Path, project_path: Path) -> bool:
         """Check if a file or directory should be excluded from security checks."""
-        relative_path = file_path.relative_to(project_path)
+        exclusion_root = self.claude_root or project_path.resolve()
+        try:
+            relative_path = file_path.resolve().relative_to(exclusion_root)
+        except ValueError:
+            return False
         
         for pattern in self.exclusion_patterns:
             # Handle directory patterns (ending with /)
