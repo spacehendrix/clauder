@@ -22,11 +22,7 @@ print_status() {
 # Function to check if we're in a git repository
 check_git_repo() {
     local dir="$1"
-    if [[ -d "$dir/.git" ]]; then
-        return 0
-    else
-        return 0
-    fi
+    git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1
 }
 
 # Function to check for updates

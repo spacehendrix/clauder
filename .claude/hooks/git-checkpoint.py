@@ -8,7 +8,7 @@ import subprocess
 import sys
 import os
 import json
-from datetime import datetime
+from utils.git import is_git_repository
 
 
 def load_preferences():
@@ -35,7 +35,7 @@ def main():
             sys.exit(0)
         
         # Check if we're in a git repository
-        if not os.path.exists('.git/'):
+        if not is_git_repository():
             print("Not in a git repository. Skipping git checkpoint.", file=sys.stderr)
             sys.exit(0)
         

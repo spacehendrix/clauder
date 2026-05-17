@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Check for required tools and git directory.
+Check for required tools and git repository.
 This script is called before user prompt submission to ensure required tools are available.
 """
 
 import subprocess
 import sys
-import os
 import json
 from utils.trace_decision import log_decision
+from utils.git import is_git_repository
 
 def load_preferences():
     """Load preferences from .claude/preferences.json"""
@@ -38,11 +38,9 @@ def main():
             if result.returncode != 0:
                 missing_tools.append(tool)
         
-        # Check if .git/ directory exists (only if git checks are enabled)
-        if git_checks_enabled:
-            git_dir_exists = os.path.exists('.git/')
-            if not git_dir_exists:
-                missing_tools.append('.git/ directory (run `git init` to create it)')
+        # Check if we're in a git repository (only if git checks are enabled)
+        if git_checks_enabled and not is_git_repository():
+            missing_tools.append('git repository (run `git init` to create one)')
         
         # If any tools are missing, exit with error
         if missing_tools:
