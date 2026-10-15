@@ -12,9 +12,9 @@
 
 * Clauder commands:
 
-→ \033[0;31m/guardrails\033[0m to review the project and set allowed/denied commands (rules are enforced automatically).
+→ \033[0;31m/guardrails\033[0m to review the project and set allowed/denied commands.
 → \033[0;31m/recruit\033[0m to recommend sub-agents for this project, or what you have in mind.
-→ \033[0;31m/spawn\033[0m to create a specialized sub-agents for a given task. (only report to the main agent, does not share context)
+→ \033[0;31m/spawn\033[0m to create a specialized sub-agents for a given task. Reports to the main agent, does not share context.
 → \033[0;31m/review\033[0m for a general purpose code review
 → \033[0;31m/consult\033[0m to consult another supported model through OpenRouter (default if unspecified: GPT5)
 
