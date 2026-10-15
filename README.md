@@ -872,7 +872,8 @@ cat .claude/preferences.json
 
 **Safe commands blocked**
 ```bash
-# You may choose to disable unsafe command detection in `.claude/preferences.json` at your own risk
+# Blocked shell commands are defined in `permissions.deny` of `.claude/settings.json`.
+# Run `/guardrails` to review them and add project-specific allow or deny rules in `.claude/settings.local.json`.
 ```
 
 **.claude/*: [Errno 2] No such file or directory**
@@ -1020,7 +1021,6 @@ clauder/
 │       ├── log-bash-commands.py          # Post-tool use bash command logging
 │       ├── log-mcp-commands.py           # Post-tool use MCP command logging
 │       ├── prevent-learning-secrets.py   # Main security checker (Python)
-│       ├── prevent-unsafe-commands.py    # Git protection script
 │       ├── require-human-approval.py     # Human approval for sensitive operations
 │       ├── no-secrets-prompted.py        # Prompt validation for secrets
 │       ├── enforce-completion-checks.py  # Documentation enforcement

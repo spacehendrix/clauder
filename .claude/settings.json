@@ -33,15 +33,6 @@
         ]
       },
       {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/prevent-unsafe-commands.py"
-          }
-        ]
-      },
-      {
         "matcher": "mcp__supabase",
         "hooks": [
           {
@@ -341,6 +332,7 @@
       "Bash(yum remove:*)",
       "Bash(brew uninstall:*)",
       "Bash(exec:*)",
+      "Bash(eval:*)",
       "Bash(source:*)",
       "Bash(userdel:*)",
       "Bash(groupdel:*)",
