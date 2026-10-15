@@ -7,7 +7,6 @@ private
 package-lock.json
 .tmp/
 .git/
-dist
 build
 env
 .env
