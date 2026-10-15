@@ -49,6 +49,8 @@ This repository contains a comprehensive Claude Code configuration that provides
 - Sub-agent creation and management (`/spawn`)
 - Code review automation (`/review`)
 - Intelligent agent recruitment (`/recruit`)
+- Project-specific permission guardrails (`/guardrails`)
+- Default sub-agents for investigation, code review, testing, security review and documentation, run in sequence with your approval
 - **65+ on-demand MCP servers**, per project
 
 **🎯 Domain-Specific Expansion Packs**
@@ -195,11 +197,11 @@ Clauder's configuration will automatically:
 - Protect sensitive files and directories (see `.claude/.ignore` and `.claude/.immutable`)
 - Log all actions for live monitoring, or auditing purposes (see `.claude/logs`); enabled in `.claude/preferences.md`
 - Enforce history and specifications tracking as you interact with Claude Code (see `HISTORY.md`, `SPECIFICATIONS.md`)
-- Provides general guidelines/rules to Claude (see `.claude/rules.md`; Never guaranteed, but does help steering it; Do not solely rely on instructions for policing or workflows)
+- Provides general guidelines/rules to Claude, loaded automatically on session start (see `.claude/rules.md`; Never guaranteed, but does help steering it; Do not solely rely on instructions for policing or workflows)
 - Provide audio feedback on completion (optional, supports mac, linux experimental; enabled in `.claude/preferences.md`)
-- Define custom commands for advanced workflows (e.g. `/consult` to consult a third party model for specific tasks, `/spawn` to create task specific agents, `/recruit` to recruit relevant agents for your project and needs, `/review` for a general review)
+- Define custom commands for advanced workflows (e.g. `/guardrails` to set project-specific allowed and denied commands, `/consult` to consult a third party model for specific tasks, `/spawn` to create task specific agents, `/recruit` to recruit relevant agents for your project and needs, `/review` for a general review)
    - *Required MCP servers detailed below.*
-- Define custom agents to help the main instance achieve specific tasks
+- Define custom agents to help the main instance achieve specific tasks (default agents detailed below)
 
 > **Domain specific *expansion packs* available** (including agents, commands, hooks and configurations - see below)
 
@@ -250,10 +252,12 @@ clauder
 
 In Claude, type:
 ```
-/rules
+/guardrails
 ```
 
-This will define the mandatory guidelines for Claude Code.
+This will review your project and its purpose, along with the current allowed and denied commands, and suggest project-specific guardrails: commands that should be allowed without prompting because they are routine and safe here, and commands that should be denied because an accidental run would be hard to reverse. Each suggestion comes with a short description. Approve or amend them, and the approved rules are written to `.claude/settings.local.json` so they persist across auto-updates.
+
+> **clauder**'s rules (`.claude/rules.md`) are enforced automatically on session start; there is no need to invoke them.
 
 > ***[ Tip ]***
 > 
@@ -334,6 +338,20 @@ e.g.
 Claude may create dedicated agents for specific tasks. They are called [Sub-Agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) and report to the main `Claude` instance. These agents have their own system prompts, tools subsets (inherit all tools by default), and context window (unaware of other chats). They are helpful in creating and recalling task-specific personas and context.
 
 **clauder** includes a `agent-builder` agent, which helps you define and craft performant agents for your specific needs. Should the [context7](https://github.com/upstash/context7) and [consult7](https://github.com/szeider/consult7) MCP tools be set in Claude Code, it will automatically use them to help enhance the new agent's workflows, best practices, and toolsets. For better results, please be specific and detailed when creating specialized agents.
+
+#### Default agents
+
+**clauder** ships with a small team of sub-agents, defined in `.claude/agents/`:
+
+- `investigator`: read-only codebase explorer. The main instance delegates to it, without asking you, whenever answering a question would mean reading several files, so the exploration never fills the main context. Returns a compact answer with `path:line` evidence.
+- `code-reviewer`: reviews the commits since its last run, and the code as it now stands, for bugs, regressions, broken edge cases and worthwhile improvements. Reports ranked findings and never edits source.
+- `security-reviewer`: exhaustive defensive security review covering classic application security, attacks aimed at AI coding assistants (prompt injection, instruction poisoning, tool abuse, exfiltration) and attacks using AI at scale (supply chain, template defaults, cost abuse). Reports confirmed vulnerabilities and hardening suggestions with remediations.
+- `test-engineer`: judges whether existing tests are sufficient, then writes and maintains behaviour-focused tests for the most important layers and integration surfaces. Leaves a short metrics report in `.test-reports/` naming the commit it covers.
+- `documentation-specialist`: brings existing documentation up to date, records important technical or product decisions, and matches the project's documentation style.
+
+The `investigator` runs freely. The other four run **only with your approval**: the main instance asks once, at a sensible pause after a significant change or a long run of minor ones, naming the agents it proposes to run. Approved agents then run **one at a time**, in the order `code-reviewer`, `security-reviewer`, `test-engineer`, `documentation-specialist`, so none of them works on a tree another is changing. Each one first reads every commit and diff since its own last run, recorded per agent in `.claude/.agent-runs.json`, reviews the current code, and reports back; the main instance relays the report and commits what the agent left in the working tree before starting the next. The shared procedure lives in `.claude/skills/agent-run-protocol/SKILL.md`.
+
+Agents and skills you modify or create are kept on activation and auto-update, and flagged when **clauder** ships a different version (see *Activate Clauder in your project*).
 
 You may create a new agent simply by asking for it:
 
@@ -742,11 +760,23 @@ Files and directories to skip in security scans.
 
 #### **`.claude/rules.md`**
 
-Behavioral guidelines.
+Behavioral guidelines, loaded automatically on session start.
 
 > ***[ Note ]***
 > 
 > Rules can never be enforced, they are used to steer the AI in a desired direction.
+
+#### **`.claude/settings.local.json`**
+
+Your project-specific settings and permission guardrails (see `/guardrails`). Never overwritten by **clauder**.
+
+#### **`.claude/skills/`**
+
+Reusable procedures the main instance and sub-agents read on demand (e.g. `agent-run-protocol`). Your own skills are kept on auto-update.
+
+#### **`.claude/.agent-runs.json`**
+
+Per-agent record of the last commit each gated sub-agent reviewed. Created once, never overwritten by **clauder**.
 
 #### **`.claude/preferences.md`**
 
@@ -953,12 +983,23 @@ clauder/
 │   ├── .ignore                           # Files to ignore during operations
 │   ├── .immutable                        # Files that should never be modified
 │   ├── .exclude_security_checks          # Security check exclusions
+│   ├── .agent-runs.json                  # Last reviewed commit per gated sub-agent
 │   ├── commands/                         # Custom command definitions
+│   │   ├── guardrails.md                 # Project-specific allowed/denied commands proposal
 │   │   ├── consult.md                    # Consult command for external AI assistance
+│   │   ├── recruit.md                    # Recruit command recommending sub-agents
+│   │   ├── review.md                     # General code review command
 │   │   ├── spawn.md                      # Spawn command for creating sub-agents
-│   │   └── rules.md                      # Rules enforcement command
+│   │   └── rules.md                      # Rules enforcement command (legacy; rules load automatically)
 │   ├── agents/                           # Sub-agent definitions
-│   │   └── agent-builder.md              # Agent builder for creating specialized agents
+│   │   ├── agent-builder.md              # Agent builder for creating specialized agents
+│   │   ├── investigator.md               # Read-only codebase explorer
+│   │   ├── code-reviewer.md              # Bug and regression review of recent commits
+│   │   ├── security-reviewer.md          # Exhaustive defensive security review
+│   │   ├── test-engineer.md              # Behaviour-focused test writing and reports
+│   │   └── documentation-specialist.md   # Documentation upkeep and decision records
+│   ├── skills/                           # Reusable procedures
+│   │   └── agent-run-protocol/SKILL.md   # Shared protocol for gated sub-agents
 │   ├── logs/                             # Generated logs (created at runtime)
 │   │   ├── bash-logs.txt                 # Bash command history
 │   │   ├── mcp-logs.txt                  # MCP tool call history
