@@ -118,7 +118,15 @@ def main():
         "stopReason": "Audio summary required.",
         "suppressOutput": True,
         "decision": "block",
-        "reason": "Audio summary required. You must now verbally report to the user that you've completed the task. Briefly describe what you just did in less than 20 words, then use the say command to speak, such as 'say \"[your description]\"'. Just run the say command directly, don't create any files or scripts."
+        "reason": (
+            "Audio summary required. Speak a short version of the written response you just gave, so the user understands "
+            "the same information without reading it: what was done or found, what is being asked of them if anything, and "
+            "what happens or should happen next. Cover every point the user needs to act on; leave out details they would "
+            "only need if they chose to read. Keep it fairly short and in plain spoken language, with no file paths, code, "
+            "identifiers, markdown or lists. There is no fixed sentence limit; say what is needed and stop. Then run the "
+            "say command directly with that text in single quotes, such as: say 'your summary'. Avoid apostrophes and "
+            "quotes inside the text. Do not create files or scripts, and do not write anything further after speaking."
+        )
     }
     log_decision(output, operation_type="audio_summary_decision")
     print(json.dumps(output))
