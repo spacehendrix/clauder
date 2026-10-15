@@ -4,7 +4,6 @@ import sys
 import os
 import subprocess
 import platform
-import time
 from utils.trace_decision import log_decision
 
 def check_command_available(command):
@@ -40,55 +39,19 @@ def resolve_speech_command():
                 return f'{candidate} -s 120'
     return None
 
-def check_session_lock():
-    """Check if audio summary has already been triggered in this session."""
-    tmp_dir = '.claude/.tmp'
-    lock_file = os.path.join(tmp_dir, 'audio-summary.lock')
-    
-    # Check if lock file exists and is recent (within last 60 seconds)
-    if os.path.exists(lock_file):
-        try:
-            with open(lock_file, 'r') as f:
-                timestamp = float(f.read().strip())
-            # If lock is less than 60 seconds old, consider it active
-            if time.time() - timestamp < 60:
-                return True
-            else:
-                # Lock is old, clear it
-                clear_session_lock()
-        except (ValueError, IOError):
-            pass
-    
-    return False
-
-def clear_session_lock():
-    """Clear the session lock file."""
-    tmp_dir = '.claude/.tmp'
-    lock_file = os.path.join(tmp_dir, 'audio-summary.lock')
-    try:
-        if os.path.exists(lock_file):
-            os.remove(lock_file)
-    except IOError:
-        pass
-
-def create_session_lock():
-    """Create a session lock to prevent multiple audio summaries."""
-    tmp_dir = '.claude/.tmp'
-    lock_file = os.path.join(tmp_dir, 'audio-summary.lock')
-    
-    # Create .tmp directory if it doesn't exist
-    try:
-        os.makedirs(tmp_dir, exist_ok=True)
-    except IOError:
-        pass
-    
-    try:
-        with open(lock_file, 'w') as f:
-            f.write(str(time.time()))
-    except IOError:
-        pass
-
 def main():
+    # Read the Stop event. Claude Code sets stop_hook_active when the model is
+    # continuing because a Stop hook already blocked once in this turn. That
+    # is the signal that the summary has been spoken, so exit without blocking
+    # and the turn ends. This yields exactly one spoken summary per user
+    # message, independent of how long speaking takes.
+    try:
+        event = json.load(sys.stdin)
+    except (json.JSONDecodeError, ValueError):
+        event = {}
+    if event.get('stop_hook_active'):
+        sys.exit(0)
+    
     # Read preferences
     preferences = get_preferences()
     
@@ -97,21 +60,13 @@ def main():
     if not audio_summary.get('enabled', False):
         sys.exit(0)
     
-    # Check if we've already triggered audio summary in this session
-    if check_session_lock():
-        # Already triggered, exit silently without clearing lock
-        sys.exit(0)
-    
     # Resolve the speech command for this machine
     speech_command = resolve_speech_command()
     if speech_command is None:
         print("No speech command available. Install `say` (macOS) or `espeak-ng`/`espeak` (Linux) to use audio summaries.", file=sys.stderr)
         sys.exit(0)
     
-    # Create session lock to prevent infinite loop
-    create_session_lock()
-    
-    # Require audio summary only once per session
+    # Require the spoken summary once for this response
     output = {
         "continue": True,
         "stopReason": "Audio summary required.",
@@ -124,7 +79,7 @@ def main():
             "only need if they chose to read. Keep it fairly short and in plain spoken language, with no file paths, code, "
             "identifiers, markdown or lists. There is no fixed sentence limit; say what is needed and stop. Then run this "
             f"exact command directly, with your text in single quotes: {speech_command} 'your summary'. Avoid apostrophes and "
-            "quotes inside the text. Do not create files or scripts, and do not write anything further after speaking."
+            "quotes inside the text. Speak once only. Do not create files or scripts, and do not write anything further after speaking."
         )
     }
     log_decision(output, operation_type="audio_summary_decision")
