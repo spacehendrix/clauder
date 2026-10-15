@@ -22,7 +22,7 @@ def main():
         
         # Define ignore patterns
         ignore_patterns = [
-            '.env', '.git/', 'build/', 'venv', '.env.'
+            '.env', '.git/', 'venv', '.env.'
         ]
         
         # Check claudeignore file
