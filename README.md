@@ -314,7 +314,7 @@ or about something specific:
 
 While Claude's models are performant for general coding, for particular tasks, such as ones requiring extensive context, or specialized training, requiring help from a different model may lead to better results.
 
-If the [consult7](https://github.com/szeider/consult7) MCP tool is added to Claude Code, with a valid [OpenRouter](https://openrouter.ai) key, **clauder** will allow you to consult any supported model via the following command (default: `openai/gpt-5`, 400k token context; for larger context you may alternatively use `google/gemini-2.5-pro`, 1M token context; larger context windows generally lower performance):
+If the [consult7](https://github.com/szeider/consult7) MCP tool is added to Claude Code, with a valid [OpenRouter](https://openrouter.ai) key, **clauder** will allow you to consult any supported model via the following command (default: `openai/gpt-6.1-sol`, 1M token context, suited to agentic coding and document-heavy work; for the most demanding analysis you may specify OpenAI's flagship `openai/gpt-6-astra` at roughly five times the price, or `google/gemini-3.1-pro-preview` as a second opinion from another vendor; very long contexts generally lower performance, so send only what is relevant):
 
 ```sh
 /consult <user query>
