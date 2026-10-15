@@ -43,7 +43,7 @@ This repository contains a comprehensive Claude Code configuration that provides
 **⚡ Workflow Automation**
 - Automatic git checkpoints before/after each interaction
 - Automatic creation and management of skills based on your interactions, presented for your review
-- (optional) Audio feedback on task completion
+- (optional) Audio feedback on task completion, toggled with `/speak`
 
 **🛠️ Advanced Toolset**
 - Custom commands for external AI consultation (`/consult`)
@@ -199,7 +199,7 @@ Clauder's configuration will automatically:
 - Log all actions for live monitoring, or auditing purposes (see `.claude/logs`); enabled in `.claude/preferences.md`
 - Enforce history and specifications tracking as you interact with Claude Code (see `HISTORY.md`, `SPECIFICATIONS.md`)
 - Provides general guidelines/rules to Claude, loaded automatically on session start (see `.claude/rules.md`; Never guaranteed, but does help steering it; Do not solely rely on instructions for policing or workflows)
-- Provide audio feedback on completion (optional, supports mac, linux experimental; enabled in `.claude/preferences.md`)
+- Provide spoken summaries of each response (optional, supports mac, linux experimental; toggle with `/speak`, or set `audio_summary.enabled` in `.claude/preferences.json`)
 - Define custom commands for advanced workflows (e.g. `/guardrails` to set project-specific allowed and denied commands, `/consult` to consult a third party model for specific tasks, `/spawn` to create task specific agents, `/recruit` to recruit relevant agents for your project and needs, `/review` for a general review)
    - *Required MCP servers detailed below.*
 - Define custom agents to help the main instance achieve specific tasks (default agents detailed below)
@@ -866,7 +866,8 @@ chmod +x .claude/hooks/*.sh
 
 **Audio not working**
 ```bash
-# Check audio preferences
+# Toggle spoken summaries from inside Claude: /speak on
+# Or check audio preferences
 cat .claude/preferences.json
 # Ensure "audio_summary.enabled" is true
 ```
@@ -988,6 +989,7 @@ clauder/
 │   ├── .agent-runs.json                  # Last reviewed commit per gated sub-agent
 │   ├── commands/                         # Custom command definitions
 │   │   ├── guardrails.md                 # Project-specific allowed/denied commands proposal
+│   │   ├── speak.md                      # Toggle spoken summaries on or off
 │   │   ├── consult.md                    # Consult command for external AI assistance
 │   │   ├── recruit.md                    # Recruit command recommending sub-agents
 │   │   ├── review.md                     # General code review command

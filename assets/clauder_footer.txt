@@ -17,6 +17,7 @@
 → \033[0;31m/spawn\033[0m to create a specialized sub-agent for a given task. Reports to the main agent, does not share context.
 → \033[0;31m/review\033[0m for a general purpose code review
 → \033[0;31m/consult\033[0m to consult another supported model through OpenRouter (default if unspecified: GPT-6.1 Sol)
+→ \033[0;31m/speak\033[0m to toggle spoken summaries of each response on or off (/speak on, /speak off)
 
 * Default commands: 
 
