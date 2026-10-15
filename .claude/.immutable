@@ -1,10 +1,5 @@
 .claude/.immutable
 .claude/.ignore
-.claude/settings.json
-.claude/commands
-.claude/hooks
-.claude/preferences.json
-.claude/rules.md
 .claude-backup/
 .claude-mcp-backup/
 .claude/logs
