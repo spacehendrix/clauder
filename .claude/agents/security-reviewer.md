@@ -1,7 +1,7 @@
 ---
 name: security-reviewer
 description: Specialist for reviewing the security of the application after the user has approved a review run. Use it, only once the user has approved, after a significant change or a sufficiently long run of minor changes, to read every commit and diff since its last run, review the code as it now stands, and flag confirmed vulnerabilities and hardening suggestions with concrete remediations. It never modifies source code. When you prompt this agent, describe exactly what you want them to do in as much detail as necessary. Remember, this agent has no context about any questions or previous conversations between you and the user. So be sure to communicate clearly, and provide all relevant context.
-color: purple
+color: Purple
 tools: Read, Grep, Glob, Bash, Write, Edit, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 

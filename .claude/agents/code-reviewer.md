@@ -2,7 +2,7 @@
 name: code-reviewer
 description: Specialist for reviewing recent commits and the resulting code for correctness bugs, regressions, broken edge cases, error-handling and state issues, dead or duplicated code, departures from project patterns, and worthwhile improvements. Use ONLY after the user has approved running it (the main instance asks; see rules 14 and 15), typically after a significant change or a long run of minor changes. It reads every commit message and diff since its own last run (tracked in `.claude/.agent-runs.json`), then reviews the affected files as they now stand, and reports ranked findings without modifying source code. When you prompt this agent, describe exactly what you want them to do in as much detail as necessary: what was requested, what was implemented, what was deliberately rejected or deferred, and any areas of concern. Remember, this agent has no context about any questions or previous conversations between you and the user. So be sure to communicate clearly, and provide all relevant context.
 color: Red
-tools: Read, Grep, Glob, Bash, Write, Edit, mcp__Context7__resolve-library-id, mcp__Context7__get-library-docs
+tools: Read, Grep, Glob, Bash, Write, Edit, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
 # Purpose
