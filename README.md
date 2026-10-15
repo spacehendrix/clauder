@@ -31,6 +31,7 @@ This repository contains a comprehensive Claude Code configuration that provides
 - Human-in-the-loop approval for sensitive operations
 - Git protection against destructive operations
 - Environment variable and sensitive data protection
+- Project-specific guardrails definition and enforcement (`/guardrails`)
 - (optional) Multi-layered secret detection and leak prevention
 
 **🔎 Logging & Monitoring**
