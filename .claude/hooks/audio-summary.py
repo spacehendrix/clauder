@@ -24,18 +24,21 @@ def get_preferences():
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
-def setup_say_command():
-    """Setup the say command for different operating systems."""
+def resolve_speech_command():
+    """Return the shell command that speaks text on this machine, or None.
+
+    macOS ships `say`. On Linux the common choices are `espeak-ng` and
+    `espeak`; both take the text as a positional argument, so the same
+    quoting instructions apply. The returned string is a command prefix:
+    the caller appends the quoted text.
+    """
     if check_command_available('say'):
-        return True
-    
-    # Check if we're on Linux and espeak is available
-    if platform.system() == 'Linux' and check_command_available('espeak'):
-        # Define alias for Linux
-        os.system('alias say="echo \\"$1\\" | espeak -s 120 2>/dev/null"')
-        return True
-    
-    return False
+        return 'say'
+    if platform.system() == 'Linux':
+        for candidate in ('espeak-ng', 'espeak'):
+            if check_command_available(candidate):
+                return f'{candidate} -s 120'
+    return None
 
 def check_session_lock():
     """Check if audio summary has already been triggered in this session."""
@@ -86,11 +89,6 @@ def create_session_lock():
         pass
 
 def main():
-    # Check if jq is available
-    if not check_command_available('jq'):
-        print("jq is not available. Please install jq to use this script.")
-        sys.exit(1)
-    
     # Read preferences
     preferences = get_preferences()
     
@@ -104,10 +102,11 @@ def main():
         # Already triggered, exit silently without clearing lock
         sys.exit(0)
     
-    # Setup say command
-    if not setup_say_command():
-        print("say command is not available. Please install say or espeak to use this script.")
-        sys.exit(1)
+    # Resolve the speech command for this machine
+    speech_command = resolve_speech_command()
+    if speech_command is None:
+        print("No speech command available. Install `say` (macOS) or `espeak-ng`/`espeak` (Linux) to use audio summaries.", file=sys.stderr)
+        sys.exit(0)
     
     # Create session lock to prevent infinite loop
     create_session_lock()
@@ -123,8 +122,8 @@ def main():
             "the same information without reading it: what was done or found, what is being asked of them if anything, and "
             "what happens or should happen next. Cover every point the user needs to act on; leave out details they would "
             "only need if they chose to read. Keep it fairly short and in plain spoken language, with no file paths, code, "
-            "identifiers, markdown or lists. There is no fixed sentence limit; say what is needed and stop. Then run the "
-            "say command directly with that text in single quotes, such as: say 'your summary'. Avoid apostrophes and "
+            "identifiers, markdown or lists. There is no fixed sentence limit; say what is needed and stop. Then run this "
+            f"exact command directly, with your text in single quotes: {speech_command} 'your summary'. Avoid apostrophes and "
             "quotes inside the text. Do not create files or scripts, and do not write anything further after speaking."
         )
     }

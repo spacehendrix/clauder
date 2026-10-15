@@ -218,6 +218,8 @@
       "Bash(git check-ignore:*)",
       "Bash(git branch --show-current)",
       "Bash(say:*)",
+      "Bash(espeak:*)",
+      "Bash(espeak-ng:*)",
       "Bash(ls:*)",
       "Bash(pwd:*)",
       "mcp__context7__resolve-library-id",
