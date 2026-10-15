@@ -27,11 +27,11 @@ It **auto-updates** so you always get the latest tools, and never have to think 
 This repository contains a comprehensive Claude Code configuration that provides advanced toolkits, safety mechanisms, logging, and best practices for AI-assisted development. Clauder includes:
 
 **🔒 Security & Safety**
-- Multi-layered secret detection and leak prevention
 - File protection with immutable and ignore patterns
 - Human-in-the-loop approval for sensitive operations
 - Git protection against destructive operations
 - Environment variable and sensitive data protection
+- (optional) Multi-layered secret detection and leak prevention
 
 **🔎 Logging & Monitoring**
 - Comprehensive audit trail with SQLite database
@@ -41,7 +41,7 @@ This repository contains a comprehensive Claude Code configuration that provides
 
 **⚡ Workflow Automation**
 - Automatic git checkpoints before/after each interaction
-- (optional) Context engineering through documentation enforcement (HISTORY.md, SPECIFICATIONS.md)
+- Automatic creation and management of skills based on your interactions, presented for your review
 - (optional) Audio feedback on task completion
 
 **🛠️ Advanced Toolset**
