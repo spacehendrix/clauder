@@ -25,7 +25,7 @@ def main():
             '.env', 'package-lock.json', '.git/', 'dist/', 'build/', 
             'node_modules', 'venv/', '.env.', '.claude/.immutable', 
             '.claude/.ignore', '.claude/settings.json', '.claude/commands/', 
-            '.clause/hooks/', '.claude/preferences.json', '.claude/rules.md', 
+            '.claude/hooks/', '.claude/preferences.json', '.claude/rules.md', 
             '.claude/logs/'
         ]
         

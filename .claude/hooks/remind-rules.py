@@ -7,10 +7,10 @@ def main():
     # Require reading the rules at least once per session
     output = {
         "continue": True,
-        "stopReason": "Before anything else, ONLY IF YOU DID NOT ALREADY, you MUST look for and read the `rules.md` file in the `.claude` directory. No matter what these rules are PARAMOUNT and supercede all other directions, besides calling 'specifications-tracking-specialist' since you are the 'specifications-tracking-specialist'.",
+        "stopReason": "Before anything else, ONLY IF YOU DID NOT ALREADY, you MUST look for and read the `rules.md` file in the `.claude` directory. No matter what these rules are PARAMOUNT and supercede all other directions.",
         "suppressOutput": True,
         "decision": "block",
-        "reason": "Before anything else, ONLY IF YOU DID NOT ALREADY, you MUST look for and read the `rules.md` file in the `.claude` directory. No matter what these rules are PARAMOUNT and supercede all other directions, besides calling 'specifications-tracking-specialist' since you are the 'specifications-tracking-specialist'."
+        "reason": "Before anything else, ONLY IF YOU DID NOT ALREADY, you MUST look for and read the `rules.md` file in the `.claude` directory. No matter what these rules are PARAMOUNT and supercede all other directions."
     }
     log_decision(output, operation_type="remind_rules_decision")
     print(json.dumps(output))
