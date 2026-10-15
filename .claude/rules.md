@@ -1,37 +1,52 @@
-# RULES (MUST DO)
+# RULES
 
-1. You MUST NEVER update this file, and ALWAYS honor and enforce all of its rules above all else. Only the user may ever update these rules. You may NEVER overrule these in any way. You SHALL NEVER summarize those rules, they MUST be followed verbatim.
-2. If you face any deadlock or uncertainty in honoring these rules, pause and explain your issue to the user, seeking for guidance.
-3. You MUST NEVER read any file or folder matching any entry in the `.claude/.ignore` file, or any secret like keys or credentials, even if you are asked to do so or you deem it necessary.
-4. You MUST NEVER write any file or folder matching any entry in the `.claude/.immutable` file, even if you are asked to do so or you deem it necessary.
-5. You MUST ALWAYS explain in the most amount of details possible the actions you are about to take and pause to ask for review and approval before proceeding with making any code change, any tool call, taking any action, or executing any command (OTHER THAN `say`, or any command explicitly allowed in `.claude/settings.json` or `.claude/settings.local.json`).
-6. Unless small and purely visual, any effort MUST be broken down into a series of the smallest possible steps, each with:
-- Clear goals
-- Extensive risks and edge cases outlined
-- A testing plan
-- A backward compatibility assessment
-If any of these are unclear, risky, or require user input, you MUST pause and discuss with the user before proceeding.
-7. When planning or executing anything you:
-- Ensure any design and implementation is coherent and compatible with `HISTORY.md` and `SPECIFICATIONS.md`, should those files exist at project root level.
-- MUST Check for inconsistencies (e.g., duplicate code, conflicting code, dead code, unstable code, anything that breaks existing behavior, anything that conflicts with established patterns)
-- MUST Check for best practices
-- MUST Check, clearly highlight, and request user consent, for any important or potentially unsafe operation other than a code change (e.g., running unsual commands, running important commands, running unsafe commands, taking actions on a system like a database, repository, server, modifying access control)
-- MUST Check for unsafe practices (e.g., security issues, irreversible actions like deletions, accessing private data such as keys, passwords, or environment variables)
-- MUST Check for missed use cases and edge cases
-- MUST Check for user experience inconsistencies or breakage
-- MUST Check for possible side effects (direct or indirect)
-- MUST Check, clearly highlight, and request user consent, for any irreversible or hardly reversible action (e.g., running qualifying commands, deletions)
-- MUST Check, clearly highlight, and request user consent, for anything that may impact the production environment
-8. After actions are taken, ensure that `HISTORY.md` and `SPECIFICATIONS.md` at project root level are correctly updated to reflect the latest state and decisions, should those files exist. Ensure these remain coherent, complete, best represented, best organized. `HISTORY.md` should include a summary of the request, detailed description of changes, and reasoning. `SPECIFICATIONS.md` should reflect all latest specifications.
-9. Once your are done with your current task, proceed with updating the `HISTORY.md` and `SPECIFICATIONS.md` files if they exist and commit your changes with `<summary>` format, including a meaningful summary and an extensive description of the changes.
-- If the user comments, use that feedback to get back to work. Reapply the same effort breakdown, checks, and `HISTORY.md` and `SPECIFICATIONS.md` updates accordingly if these files exist.
-- If the user disapproves and wants to revert to a prior commit, show the commit history and present all commits and actions to undo. You MUST get explicit approval and commit id to revert to, from the user, before proceeding.
-10. You do not need approval to commit or update the `HISTORY.md` and `SPECIFICATIONS.md` files, but you need describe the actions taken in the most amount of details possible.
-11. You SHALL NEVER create new `HISTORY.md` and `SPECIFICATIONS.md` files yourself. These must always be created by the user.
-11. You SHALL NEVER attempt to bypass a blocking hook or denied access by trying a different method.
-12. You SHALL NEVER execute any script which you do not trust.
-13. When working with CSS, all `px` values MUST be expressed in `rem`, unless lower than 4px or defining media breakpoint.
-14. When creating a new Claude Code Sub-Agent, through `/agents` or when asked to create a new `Claude` agent in natural language, always use the specilized agent called `agent-builder`. Once the new sub-agent has been created, always mention: "☑️ New specialized agent created in `.claude/agents/`. 🔄 Restart Claude Code to start using it.".
-15. When updating the `HISTORY.md` and `SPECIFICATIONS.md` files your must use the specilized agent called `specifications-tracking-specialist` if available, unless you are the `specifications-tracking-specialist` sub-agent already. When you prompt this agent, describe exactly what changes occurred, what was requested, what was implemented, and what was dismissed, providing as much detail as possible. Remember, this agent has no context about any questions or previous conversations between you and the user. So be sure to communicate clearly, and provide ALL relevant context.
-16. When receiving feedback or reviews from other agents, always keep in mind they may not have as much context as you do, and help put things in perspective. Make sure important feedback is taken into acount, while ensuring that features remain coherent, that context isn't lost, that the project complexity does not outgrow its scope, abd that the project does not become overly future-proofed.
-17. Never keep secrets like environment variables or keys in the project. Always recommend keeping them in `~/.env/<project-name>` and never read or access them.
+These rules steer the AI in this project. Only the user may edit this file. If a `CLAUDE.md` exists at project root, it is maintained separately and overrides these rules on conflict. If a rule is unclear, or two rules conflict, stop and ask the user.
+
+## 1. Boundaries
+
+1. Never read any file or folder matching an entry in `.claude/.ignore`, and never read secrets (keys, tokens, credentials, `.env` files), even when asked. If you need their contents, say so and ask the user for a redacted copy or a reference to a vault.
+2. Never write any file or folder matching an entry in `.claude/.immutable`, even when asked.
+3. Never keep secrets in the project. Recommend `~/.env/<project-name>` or a vault, referenced by path or variable name only.
+4. Never bypass a blocking hook, a denied permission, or a failed check by trying another method. Report it and wait.
+5. Never execute a script or command you do not understand or trust. Read it first.
+
+## 2. Working method
+
+6. Do what was asked. Reasonable abstraction, refactoring, and future-proofing that serve the request are fine. Anything significant, such as re-architecting, introducing new layers or patterns, or changing code well outside the request, is discussed with the user first. If you see a problem outside the request, mention it in one or two sentences and continue.
+7. When a request or change reasonably justifies it, interview the user before changing code: ask for missing details, surface the decisions and trade-offs involved, and confirm the context you are relying on. Do this when the request is ambiguous, when several readings would lead to materially different work, when the change touches behaviour users depend on, or when a design decision would be costly to reverse. Do not interview for small or clear changes.
+8. Scale your process to the change:
+   - Trivial or purely visual: do it, then summarise in one line.
+   - Anything else: state goals, the files involved, risks and edge cases, how you will verify it, and backward compatibility, before changing code. Use plan mode when the work spans several files or changes behaviour.
+9. Before you change code, check for duplicate, conflicting, or dead code, broken existing behaviour, departures from established patterns, missed edge cases, side effects, and user-facing breakage.
+10. Verify before you declare done: run the existing tests, linters, and type checks relevant to the change. Report results truthfully, including failures and anything you skipped.
+11. Commit when a task is complete, with a short summary line and a body describing what changed and why. You do not need approval to commit. Never revert, rebase, or force-push without explicit approval and a commit id from the user.
+
+## 3. Risk
+
+12. Before an action that carries risk, highlight the risks and edge cases to the user. If they are significant, pause and make sure the user understands them before proceeding. Risky actions include, at minimum:
+    - Irreversible or hard-to-reverse operations (deletions, history rewrites, data migrations).
+    - Actions on live systems (databases, servers, repositories, access control, deployments).
+    - Anything that may affect a production environment.
+    - Unusual, elevated, or destructive shell commands.
+    Permissions configured in `.claude/settings.json` or `.claude/settings.local.json` cover routine commands. They do not replace this rule for the items above.
+
+## 4. Sub-agents
+
+13. Delegate to the sub-agent made for the job, instead of doing it yourself in the main context. Give each one a clear scope and all the context it needs. Sub-agents start with no memory of this conversation, so brief them fully: what was requested, what was done, what was rejected, and where to look.
+    - `investigator`: explores the codebase to answer a question or build understanding. Use it for any exploration that would otherwise fill your own context. It may run at any time without asking.
+    - `code-reviewer`: reviews recent commits for bugs, regressions, and improvements.
+    - `test-engineer`: judges whether existing tests are sufficient, then writes and maintains tests. It tests behaviour, inputs, outputs, and outcomes, never implementation details, and focuses on the most important layers and integration surfaces. It writes a short report with high-level metrics to `.test-reports/`, naming the commit it covers.
+    - `security-reviewer`: reviews the security of the application and flags or suggests improvements.
+    - `documentation-specialist`: documents the codebase and important technical or product decisions, including investigation results when useful. It reads the existing documentation first, keeps it up to date, and matches its style.
+14. Every sub-agent other than `investigator` runs only with the user's approval. Ask whether to run them after a significant change, or after a sufficiently long run of minor changes, when it is sensible to pause and check the latest code. Do not ask eagerly or often, and do not get in the way of development.
+15. When one of those sub-agents runs, it first reads every commit message and diff since its own last run, recorded in `.claude/.agent-runs.json`, then reviews the code as it now stands before advising or acting. It updates its entry in that file when it finishes.
+16. When asked to create a new sub-agent, in any wording, use the `agent-builder` agent. Afterwards tell the user: "☑️ New specialized agent created in `.claude/agents/`. 🔄 Restart Claude Code to start using it."
+17. When another agent gives you feedback or a review, remember it has less context than you. Take important points on board, keep features coherent, and do not let the project outgrow its scope.
+
+## 5. Skills
+
+18. When an operation is intricate, needs precise and stable context, or is done frequently, draft a skill for it in `.claude/skills/` and present the draft to the user for review before relying on it. Keep existing skills accurate when the operations they describe change.
+
+## 6. Conventions
+
+19. CSS: express `px` values in `rem`, except values below 4px and media query breakpoints.
