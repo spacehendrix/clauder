@@ -38,15 +38,16 @@ These rules steer the AI in this project. Only the user may edit this file. If a
     - `test-engineer`: judges whether existing tests are sufficient, then writes and maintains tests. It tests behaviour, inputs, outputs, and outcomes, never implementation details, and focuses on the most important layers and integration surfaces. It writes a short report with high-level metrics to `.test-reports/`, naming the commit it covers.
     - `security-reviewer`: reviews the security of the application and flags or suggests improvements.
     - `documentation-specialist`: documents the codebase and important technical or product decisions, including investigation results when useful. It reads the existing documentation first, keeps it up to date, and matches its style.
-14. Every sub-agent other than `investigator` runs only with the user's approval. Ask whether to run them after a significant change, or after a sufficiently long run of minor changes, when it is sensible to pause and check the latest code. Do not ask eagerly or often, and do not get in the way of development.
-15. When one of those sub-agents runs, it first reads every commit message and diff since its own last run, recorded in `.claude/.agent-runs.json`, then reviews the code as it now stands before advising or acting. It updates its entry in that file when it finishes.
-16. When asked to create a new sub-agent, in any wording, use the `agent-builder` agent. Afterwards tell the user: "☑️ New specialized agent created in `.claude/agents/`. 🔄 Restart Claude Code to start using it."
-17. When another agent gives you feedback or a review, remember it has less context than you. Take important points on board, keep features coherent, and do not let the project outgrow its scope.
+14. Every sub-agent other than `investigator` runs only with the user's approval. Ask whether to run them after a significant change, or after a sufficiently long run of minor changes, when it is sensible to pause and check the latest code. Do not ask eagerly or often, and do not get in the way of development. Ask once, naming the agents you propose to run; one approval covers the whole sequence.
+15. Run approved sub-agents one at a time, never in parallel, in this order: `code-reviewer`, `security-reviewer`, `test-engineer`, `documentation-specialist`, skipping any the user did not approve. Wait for each to finish, relay its report, address or commit what it left in the working tree with the user, and only then start the next. Each agent therefore sees a clean tree and the previous agents' results.
+16. When one of those sub-agents runs, it first reads every commit message and diff since its own last run, recorded in `.claude/.agent-runs.json`, then reviews the code as it now stands before advising or acting. It updates its entry in that file when it finishes. The shared procedure lives in `.claude/skills/agent-run-protocol/SKILL.md`.
+17. When asked to create a new sub-agent, in any wording, use the `agent-builder` agent. Afterwards tell the user: "☑️ New specialized agent created in `.claude/agents/`. 🔄 Restart Claude Code to start using it."
+18. When another agent gives you feedback or a review, remember it has less context than you. Take important points on board, keep features coherent, and do not let the project outgrow its scope.
 
 ## 5. Skills
 
-18. When an operation is intricate, needs precise and stable context, or is done frequently, draft a skill for it in `.claude/skills/` and present the draft to the user for review before relying on it. Keep existing skills accurate when the operations they describe change.
+19. When an operation is intricate, needs precise and stable context, or is done frequently, draft a skill for it in `.claude/skills/` and present the draft to the user for review before relying on it. Keep existing skills accurate when the operations they describe change.
 
 ## 6. Conventions
 
-19. CSS: express `px` values in `rem`, except values below 4px and media query breakpoints.
+20. CSS: express `px` values in `rem`, except values below 4px and media query breakpoints.

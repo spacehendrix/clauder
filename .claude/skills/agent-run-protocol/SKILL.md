@@ -80,6 +80,14 @@ PY
 
 Record the `HEAD` you reviewed. Do this even when you found nothing. If the write fails, say so prominently and quote the values the main instance should record. Do not commit; the main instance and the user review and commit.
 
-## 5. Report range
+## 5. Sequencing (for the main instance)
+
+Gated agents run one at a time, never in parallel. Two agents working at once would race on `.claude/.agent-runs.json`, review a tree the other is changing, and leave mixed changes nobody can attribute.
+
+Order: `code-reviewer`, then `security-reviewer`, then `test-engineer`, then `documentation-specialist`. Reviewers go first so defects are known before tests pin behaviour down; documentation goes last so it describes the final state, tests included. Skip agents the user did not approve; keep the order for the rest.
+
+Between agents: wait for the report, relay it to the user, resolve or commit what the agent left in the working tree, then start the next. Each agent must start from a clean tree.
+
+## 6. Report range
 
 Every report opens with the range reviewed: `<lower>..<HEAD>` as short shas, the commit count, whether it was the recorded or the fallback range and why, whether uncommitted changes were included, and the paths skipped.
