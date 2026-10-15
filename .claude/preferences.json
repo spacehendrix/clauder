@@ -8,6 +8,9 @@
   "secret_pattern_safety_checks": {
     "enabled": false
   },
+  "learning_secret_safety_checks": {
+    "enabled": false
+  },
   "logging": {
     "bash_commands": {
       "enabled": false

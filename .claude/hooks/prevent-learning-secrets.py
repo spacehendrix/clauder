@@ -541,13 +541,25 @@ Examples:
     
     args = parser.parse_args()
     
+    # Check if running as a hook vs standalone
+    is_hook = not args.standalone
+    
+    # Opt-in via .claude/preferences.json → learning_secret_safety_checks.enabled
+    # Only gates the hook; the standalone `clauder_security_check` run always executes.
+    if is_hook:
+        preferences = get_preferences()
+        learning_secret_safety_checks = preferences.get('learning_secret_safety_checks', {})
+        if not learning_secret_safety_checks.get('enabled', False):
+            output = {
+                "reason": "Learning secret safety checks disabled in preferences. Proceeding."
+            }
+            print(json.dumps(output))
+            sys.exit(0)
+    
     try:
         project_path = Path(args.project_directory)
         checker = ProjectSafetyChecker()
         is_safe, results = checker.check_project_safety(project_path, standalone=args.standalone)
-        
-        # Check if running as a hook vs standalone
-        is_hook = not args.standalone
         
         if is_hook:
             # JSON format for hooks

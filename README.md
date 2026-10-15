@@ -867,6 +867,15 @@ cat .claude/.exclude_security_checks
 # Alternatively, you may choose to disable secret pattern detection in `.claude/preferences.json`
 ```
 
+**Secret scanning not running on prompt**
+```bash
+# Prompt-time secret scanning hooks are opt-in and disabled by default. Enable them in `.claude/preferences.json`:
+#   "learning_secret_safety_checks": { "enabled": true }  # scan project files/directories for secrets before each prompt
+#   "secret_pattern_safety_checks": { "enabled": true }   # also scan file contents for secret patterns
+#   "prompt_secret_safety_checks": { "enabled": true }    # scan the prompt text itself for secrets
+# `clauder_security_check` always runs regardless of these preferences.
+```
+
 **claude: command not found**
 ```bash
 # clauder runs claude in a standard 'bash' shell, irrespective of where it was started (e.g. ZSH).
