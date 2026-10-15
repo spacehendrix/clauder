@@ -172,6 +172,8 @@ cd clauder && bash ./clauder_install.sh
 > Activating Clauder may override any existing `.claude` configuration. Backups will automatically be created to save/restore your existing configurations. These can be found at `./.claude-backup/`, `./.claude-mcp-backup/` for MCP configurations.
 >
 > Notably, `.claude/settings.json` will be overriden for consistency and security purposes, upon every activation (including auto-updates).
+>
+> Sub-agents and skills you created or modified in `.claude/agents/` and `.claude/skills/` are kept on every activation and auto-update. When clauder ships a different version of a file you modified, your version is left untouched and the file is flagged with a `diff` command so you can review and adopt clauder's version if you wish. Unmodified clauder agents and skills are updated as usual. `.claude/.agent-runs.json` (sub-agent run markers) is created once and never overwritten.
 > Custom settings must be defined in `.claude/settings.local.json` to remain persisted throughout clauder activation.
 
 Run in your project directory:

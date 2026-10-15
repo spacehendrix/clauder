@@ -195,6 +195,75 @@ cleanup_old_backups() {
     fi
 }
 
+# Agents and skills the user created or modified in the target project are
+# kept on activation and update. A file is considered customised when it exists
+# in the target, differs from the version clauder ships now, and also differs
+# from the version clauder shipped at the commit recorded in .claude/.clauderrc
+# (an unmodified stale copy is simply updated). Kept files are flagged so the
+# user can review clauder's version and decide whether to adopt it.
+KEPT_CUSTOM_FILES=()
+
+is_protected_path() {
+    local relative_path="$1"
+    case "$relative_path" in
+        agents/*|skills/*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# Returns 0 when the target file must be kept (customised), 1 when it may be
+# overwritten. Arguments: relative path, target file, source file, target .claude
+# directory, path of the source root inside the clauder repository
+# (".claude" or ".claude-expansion-packs/<name>").
+is_customized_file() {
+    local relative_path="$1"
+    local target_file="$2"
+    local source_file="$3"
+    local target_claude="$4"
+    local source_root_rel="$5"
+    local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+
+    is_protected_path "$relative_path" || return 1
+    [ -f "$target_file" ] || return 1
+    cmp -s "$target_file" "$source_file" && return 1
+
+    # Compare with the version shipped at the previously activated commit
+    local clauderrc_file="$target_claude/.clauderrc"
+    if [ -f "$clauderrc_file" ] && [ -d "$clauder_dir/.git" ]; then
+        local previous_commit
+        previous_commit=$(tr -d '\n\r' < "$clauderrc_file")
+        if [ -n "$previous_commit" ]; then
+            local previous_content
+            if previous_content=$(cd "$clauder_dir" && git show "$previous_commit:$source_root_rel/$relative_path" 2>/dev/null); then
+                if [ "$previous_content" = "$(cat "$target_file")" ]; then
+                    return 1  # unmodified clauder file, safe to update
+                fi
+            fi
+        fi
+    fi
+
+    return 0
+}
+
+report_kept_custom_files() {
+    local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+    if [ ${#KEPT_CUSTOM_FILES[@]} -eq 0 ]; then
+        return 0
+    fi
+    echo ""
+    echo "⚠ Kept ${#KEPT_CUSTOM_FILES[@]} customised agent/skill file(s). Clauder ships a different version of each:"
+    local entry
+    for entry in "${KEPT_CUSTOM_FILES[@]}"; do
+        local relative_path="${entry%%|*}"
+        local source_file="${entry#*|}"
+        echo "  • .claude/$relative_path"
+        echo "      review: diff \"$source_file\" \".claude/$relative_path\""
+    done
+    echo "  Your versions were left untouched. To adopt clauder's version of a file, copy it over yours."
+    echo ""
+    KEPT_CUSTOM_FILES=()
+}
+
 # Function to check for existing .claude files that would be overwritten
 check_existing_files() {
     local source_claude="$1"
@@ -206,6 +275,8 @@ check_existing_files() {
         return 1
     fi
     
+    local files_to_keep=()
+    
     if [ -d "$target_claude" ]; then
         # Check which files from source would overwrite existing files in target
         while IFS= read -r -d '' source_file; do
@@ -215,9 +286,19 @@ check_existing_files() {
             
             # Check if target file exists
             if [ -f "$target_file" ]; then
-                files_to_overwrite+=("$relative_path")
+                if is_customized_file "$relative_path" "$target_file" "$source_file" "$target_claude" ".claude"; then
+                    files_to_keep+=("$relative_path")
+                else
+                    files_to_overwrite+=("$relative_path")
+                fi
             fi
         done < <(find "$source_claude" -type f -print0 2>/dev/null)
+    fi
+    
+    if [ ${#files_to_keep[@]} -gt 0 ]; then
+        echo "Note: The following customised agents/skills will be KEPT (clauder ships a different version):"
+        printf '  %s\n' "${files_to_keep[@]}"
+        echo ""
     fi
     
     if [ ${#files_to_overwrite[@]} -gt 0 ]; then
@@ -418,6 +499,10 @@ copy_expansion_pack() {
                     echo "  ⚠ Merged (fallback): $relative_path"
                 fi
             fi
+        elif is_customized_file "$relative_path" "$target_file" "$source_file" "$target_claude" ".claude-expansion-packs/$expansion_name"; then
+            # Keep the user's customised agent or skill and flag it
+            KEPT_CUSTOM_FILES+=("$relative_path|$source_file")
+            echo "  ⚠ Kept (customised): $relative_path"
         else
             # Copy the file normally
             if cp -f "$source_file" "$target_file" 2>/dev/null; then
@@ -1613,7 +1698,10 @@ copy_claude_folder() {
         done
         
         # Handle file copying/merging
-        if [ "$should_merge" = true ] && [ -f "$target_file" ]; then
+        if [ "$filename" = ".agent-runs.json" ] && [ -f "$target_file" ]; then
+            # Per-project state (sub-agent last-run markers): create once, never overwrite
+            successful_copies+=("$relative_path (kept, project state)")
+        elif [ "$should_merge" = true ] && [ -f "$target_file" ]; then
             # Merge with existing configuration to preserve custom settings
             if [[ "$filename" == *.json ]]; then
                 if merge_json_files "$target_file" "$source_file"; then
@@ -1628,6 +1716,10 @@ copy_claude_folder() {
                     failed_copies+=("$relative_path (merge failed)")
                 fi
             fi
+        elif is_customized_file "$relative_path" "$target_file" "$source_file" "$target_claude" ".claude"; then
+            # Keep the user's customised agent or skill and flag it
+            KEPT_CUSTOM_FILES+=("$relative_path|$source_file")
+            successful_copies+=("$relative_path (kept, customised)")
         else
             # Copy the file normally (overwrite if it doesn't exist or isn't mergeable)
             if cp -f "$source_file" "$target_file" 2>/dev/null; then
@@ -1655,6 +1747,9 @@ copy_claude_folder() {
     else
         echo "Some files could not be copied, but continuing with activation..."
     fi
+    
+    # Flag customised agents/skills that were kept instead of overwritten
+    report_kept_custom_files
     
     # Create .clauderrc file to track the commit ID
     create_clauderrc "$target_claude"
@@ -1725,6 +1820,9 @@ main() {
     if [ ${#expansions[@]} -gt 0 ]; then
         apply_expansion_packs "$target_path" "${expansions[@]}"
     fi
+    
+    # Flag customised agents/skills that were kept instead of overwritten
+    report_kept_custom_files
 }
 
 # Run main function with all arguments
